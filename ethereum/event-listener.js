@@ -3,34 +3,34 @@ const rentalJson = require('./build/Rental.json');
 const factoryJson = require('./build/RentalFactory.json');
 
 const web3 = new Web3(
-  new Web3.providers.WebsocketProvider(
-    'wss://rinkeby.infura.io/ws/v3/b8c90db97bac4732b9d0c16d37ab394f',
-  ),
+    new Web3.providers.WebsocketProvider(
+        'wss://rinkeby.infura.io/ws/v3/b8c90db97bac4732b9d0c16d37ab394f',
+    ),
 );
 
 const rental = new web3.eth.Contract(
-  rentalJson.abi,
-  '0x35Ec9779B24d1C78Ab48e8E32B0133E0AF02e1cA',
+    rentalJson.abi,
+    '0x35Ec9779B24d1C78Ab48e8E32B0133E0AF02e1cA',
 );
 
 rental.events
-  .CarRented({fromBlock: 0}, function(error, event) {
-    console.log(event);
-  })
-  .on('connected', function(subscriptionId) {
-    console.log(subscriptionId);
-  })
-  .on('data', function(event) {
-    console.log(event); // same results as the optional callback above
-  })
-  .on('changed', function(event) {
-    // remove event from local database
-  })
-  .on('error', console.error);
+    .CarRented({ fromBlock: 0 }, function(error, event) {
+        console.log(event);
+    })
+    .on('connected', function(subscriptionId) {
+        console.log(subscriptionId);
+    })
+    .on('data', function(event) {
+        console.log(event); // same results as the optional callback above
+    })
+    .on('changed', function(event) {
+        // remove event from local database
+    })
+    .on('error', console.error);
 
 const factory = new web3.eth.Contract(
-  factoryJson.abi,
-  '0x0376c74c41bf6C6D006e4fC116683Bc10bDc03FA',
+    factoryJson.abi,
+    '0x0376c74c41bf6C6D006e4fC116683Bc10bDc03FA',
 );
 
 /* function fetchData() {
