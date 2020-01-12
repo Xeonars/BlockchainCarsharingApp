@@ -5,6 +5,7 @@ import DefaultCar from '../../static/images/DefaultCar.png';
 import ReturnDialog from '../Dialogs/ReturnDialog';
 import { web3, rental as rentalInstance } from '../../ethereum';
 import signTransaction from '../../ethereum/getSignedTransaction';
+import { storageRef } from '../firebase/firebase';
 
 const styles = StyleSheet.create({
     buttons: {
@@ -20,6 +21,20 @@ const RentedCarCard = props => {
     const [visible, setVisible] = React.useState(false);
     const [progress, setProgress] = React.useState(0);
     const [progressText, setProgressText] = React.useState('');
+    const [carImage, setCarImage] = React.useState(DefaultCar);
+
+    React.useEffect(() => {
+        const fetchImage = async () => {
+            await storageRef
+                .ref(`images/${rental[0]}.jpg`)
+                .getDownloadURL()
+                .then(url => {
+                    setCarImage({ uri: url });
+                });
+        };
+
+        fetchImage();
+    }, [rental]);
 
     const returnCar = async () => {
         const tx = await signTransaction(
@@ -47,8 +62,11 @@ const RentedCarCard = props => {
     return (
         <React.Fragment>
             <Card style={styles.card}>
-                <Card.Title title="Card Title" subtitle={rental[0]} />
-                <Card.Cover source={DefaultCar} />
+                <Card.Title
+                    title={`${rental[6]}, ${rental[7]}, Price: ${rental[3]}`}
+                    subtitle={rental[0]}
+                />
+                <Card.Cover source={carImage} />
                 <Card.Actions style={styles.buttons}>
                     <Button onPress={() => props.viewDetail()}>View</Button>
                     <Button onPress={() => setVisible(true)}>Return</Button>

@@ -7,15 +7,6 @@ import { web3, rental as rentalInstance } from '../../ethereum';
 import signTransaction from '../../ethereum/getSignedTransaction';
 import { storageRef } from '../firebase/firebase';
 
-const styles = StyleSheet.create({
-    buttons: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    card: { padding: 20, marginVertical: 8, marginHorizontal: 16 },
-});
-
 const AvaibleCarCard = props => {
     const rental = props.rental.item;
     const [visible, setVisible] = React.useState(false);
@@ -26,7 +17,7 @@ const AvaibleCarCard = props => {
     React.useEffect(() => {
         const fetchImage = async () => {
             await storageRef
-                .ref(`images/${rental[0]}.jpeg`)
+                .ref(`images/${rental[0]}.jpg`)
                 .getDownloadURL()
                 .then(url => {
                     setCarImage({ uri: url });
@@ -45,7 +36,7 @@ const AvaibleCarCard = props => {
             rentalInstance(rental[0])
                 .methods.rent()
                 .encodeABI(),
-            14,
+            rental[3] + 1,
         );
 
         setProgressText('Sending transaction');
@@ -72,7 +63,10 @@ const AvaibleCarCard = props => {
     return (
         <React.Fragment>
             <Card style={styles.card}>
-                <Card.Title title="Card Title" subtitle={rental[0]} />
+                <Card.Title
+                    title={`${rental[6]}, ${rental[7]}, Price: ${rental[3]}`}
+                    subtitle={rental[0]}
+                />
                 <Card.Cover source={carImage} />
                 <Card.Actions style={styles.buttons}>
                     <Button
@@ -96,3 +90,12 @@ const AvaibleCarCard = props => {
 };
 
 export default AvaibleCarCard;
+
+const styles = StyleSheet.create({
+    buttons: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    card: { padding: 20, marginVertical: 8, marginHorizontal: 16 },
+});
