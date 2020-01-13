@@ -25,18 +25,25 @@ const RentedCarCard = props => {
 
     React.useEffect(() => {
         const fetchImage = async () => {
-            await storageRef
-                .ref(`images/${rental[0]}.jpg`)
-                .getDownloadURL()
-                .then(url => {
-                    setCarImage({ uri: url });
-                });
+            try {
+                await storageRef
+                    .ref(`images/${rental[0]}.jpg`)
+                    .getDownloadURL()
+                    .then(url => {
+                        setCarImage({ uri: url });
+                    });
+            } catch (error) {
+                console.log('No image found for ' + rental[0]);
+            }
         };
 
         fetchImage();
     }, [rental]);
 
     const returnCar = async () => {
+        setProgressText('Creating transaction');
+        setProgress(0.1);
+
         const tx = await signTransaction(
             rental[0],
             rentalInstance(rental[0])
@@ -45,6 +52,8 @@ const RentedCarCard = props => {
             0,
         );
 
+        setProgressText('Sending transaction');
+        setProgress(0.5);
         await submitTransaction(tx);
     };
 
@@ -53,9 +62,15 @@ const RentedCarCard = props => {
             .sendSignedTransaction(tx.rawTransaction)
             .on('error', error => {
                 console.log(error);
+                setProgress(0);
+                setProgressText(JSON.stringify(error));
             })
             .once('confirmation', (confNumb, receipt) => {
                 console.log(receipt);
+                setProgress(1);
+                setProgressText('Transaction finished');
+
+                props.fetchRentals();
             });
     };
 

@@ -16,12 +16,16 @@ const AvaibleCarCard = props => {
 
     React.useEffect(() => {
         const fetchImage = async () => {
-            await storageRef
-                .ref(`images/${rental[0]}.jpg`)
-                .getDownloadURL()
-                .then(url => {
-                    setCarImage({ uri: url });
-                });
+            try {
+                await storageRef
+                    .ref(`images/${rental[0]}.jpg`)
+                    .getDownloadURL()
+                    .then(url => {
+                        setCarImage({ uri: url });
+                    });
+            } catch (error) {
+                console.log('No image found for ' + rental[0]);
+            }
         };
 
         fetchImage();
